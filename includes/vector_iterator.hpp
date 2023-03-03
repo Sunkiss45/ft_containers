@@ -6,7 +6,7 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 15:59:12 by acoinus           #+#    #+#             */
-/*   Updated: 2023/03/02 18:07:11 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/03 17:31:05 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,42 +89,71 @@ namespace ft
 
 			vector_iterator(vector_iterator const &other) : _ptr(other._ptr) {};
 
-			vector_iterator &operator=(vector_iterator const &other)
-			{
+			vector_iterator &operator=(vector_iterator const &other) {
 				if (*this != other)
 					_ptr = other._ptr;
-				return (this);
-			}
+				return (this); }
+
+			/*
+				GETTER - DEREFERENCED
+			*/
+
+			pointer		get(void) const {
+				return(this->_ptr); }
+
+			reference	operator*(void) const {
+				return(this->*_ptr); }
+
+			reference	operator->(void) const {
+				return &(operator*()); }
+
+			/*
+				INCREMENTATION - DECREMENTATION
+			*/
+
+			vector_iterator	&operator++(void) {
+				++this->_ptr;
+				return(*this); }
+
+			vector_iterator	&operator++(int) {
+				vector_iterator tmp = *this;
+				++this->_ptr;
+				return(tmp); }
+
+			vector_iterator	&operator--(void) {
+				--this->_ptr;
+				return(*this); }
+
+			vector_iterator	&operator--(int) {
+				vector_iterator tmp = *this;
+				--this->_ptr;
+				return(tmp); }
+
+			/*
+				ARITHMETIC
+			*/
+
+			vector_iterator	&operator+(difference_type n) const {
+				return(vector_iterator(this->_ptr + n)); }
+
+			vector_iterator	&operator+=(difference_type n) {
+				this->_ptr += n;
+				return(*this); }
+
+			friend ft::vector_iterator<value_type>	&operator+(const ft::vector_iterator<value_type> &lhs, const ft::vector_iterator<value_type> &rhs) {
+				return vector_iterator<value_type>(lhs.get() - rhs); }
+
+	};
 
 			/*
 				EQUALITY - INEQUALITY
 			*/
 
-			bool	operator==(vector_iterator const &other)
-			{
-				return (this->_ptr == other._ptr);
-			}
+			// bool	operator==(vector_iterator const &other) const {
+			// 	return (this->_ptr == other._ptr); }
 
-			bool	operator!=(vector_iterator const &other)
-			{
-				return (this->_ptr != other._ptr);
-			}
-
-			/*
-				DEREFERENCED
-			*/
-
-			reference	operator*(void)
-			{
-				return(this->*_ptr);
-			}
-
-			reference	operator->(void)
-			{
-				return &(operator*());
-			}
-
-	};
+			// bool	operator!=(vector_iterator const &other) const {
+			// 	return (this->_ptr != other._ptr); }
 }
 
 #endif
