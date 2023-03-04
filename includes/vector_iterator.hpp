@@ -6,7 +6,7 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 15:59:12 by acoinus           #+#    #+#             */
-/*   Updated: 2023/03/03 17:31:05 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/04 12:43:28 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,12 @@
 
 namespace ft
 {
+	struct output_iterator_tag {};
+	struct input_iterator_tag {};
+	struct forward_iterator_tag : public input_iterator_tag {};
+	struct bidirectional_iterator_tag : public forward_iterator_tag {};
+	struct random_access_iterator_tag : public bidirectional_iterator_tag {};
+
 	template <class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
 	struct iterator
 	{
@@ -30,11 +36,11 @@ namespace ft
 	template <class Iterator>
 	struct iterator_traits
 	{
-		typedef Iterator::difference_type	difference_type;
-		typedef Iterator::value_type		value_type;
-		typedef Iterator::Pointer			pointer;
-		typedef Iterator::Reference			reference;
-		typedef Iterator::iterator_category	iterator_category;
+		typedef typename Iterator::difference_type		difference_type;
+		typedef typename Iterator::value_type			value_type;
+		typedef typename Iterator::Pointer				pointer;
+		typedef typename Iterator::Reference			reference;
+		typedef typename Iterator::iterator_category	iterator_category;
 	};
 
 	template <class T>
@@ -44,7 +50,7 @@ namespace ft
 		typedef T							value_type;
 		typedef T*							pointer;
 		typedef T&							reference;
-		typedef random_access_iterator_tag	iterator_category;
+		typedef ft::random_access_iterator_tag	iterator_category;
 	};
 
 	template <class T>
@@ -54,14 +60,8 @@ namespace ft
 		typedef T							value_type;
 		typedef const T*					pointer;
 		typedef const T&					reference;
-		typedef random_access_iterator_tag	iterator_category;
+		typedef ft::random_access_iterator_tag	iterator_category;
 	};
-	
-	struct output_iterator_tag {};
-	struct input_iterator_tag {};
-	struct forward_iterator_tag : public input_iterator_tag {};
-	struct bidirectional_iterator_tag : public forward_iterator_tag {};
-	struct random_access_iterator_tag : public bidirectional_iterator_tag {};
 
 	template <typename T>
 	class vector_iterator : public ft::iterator<ft::random_access_iterator_tag, T>
@@ -133,15 +133,38 @@ namespace ft
 				ARITHMETIC
 			*/
 
-			vector_iterator	&operator+(difference_type n) const {
+			vector_iterator	operator+(difference_type n) const {
 				return(vector_iterator(this->_ptr + n)); }
 
 			vector_iterator	&operator+=(difference_type n) {
 				this->_ptr += n;
 				return(*this); }
 
-			friend ft::vector_iterator<value_type>	&operator+(const ft::vector_iterator<value_type> &lhs, const ft::vector_iterator<value_type> &rhs) {
-				return vector_iterator<value_type>(lhs.get() - rhs); }
+			friend ft::vector_iterator<value_type>	operator+(const difference_type n, const ft::vector_iterator<value_type> &rhs) {
+				return vector_iterator<value_type>(n + rhs.base()); }
+
+			friend ft::vector_iterator<value_type>	operator+(const ft::vector_iterator<value_type> &lhs, const difference_type n) {
+				return vector_iterator<value_type>(lhs.base() + n); }
+
+			friend ft::vector_iterator<value_type>	operator+(const ft::vector_iterator<value_type> &lhs, const ft::vector_iterator<value_type> &rhs) {
+				return vector_iterator<value_type>(lhs.base() + rhs.base()); }
+
+
+			vector_iterator	operator-(difference_type n) const {
+				return(vector_iterator(this->_ptr - n)); }
+
+			vector_iterator	&operator-=(difference_type n) {
+				this->_ptr -= n;
+				return(*this); }
+
+			friend difference_type	operator-(const difference_type n, const ft::vector_iterator<value_type> &rhs) {
+				return (n - rhs.base()); }
+
+			friend difference_type	operator-(const ft::vector_iterator<value_type> &lhs, const difference_type n) {
+				return (lhs.base() - n); }
+
+			friend difference_type	operator-(const ft::vector_iterator<value_type> &lhs, const ft::vector_iterator<value_type> &rhs) {
+				return (lhs.base() - rhs.base()); }
 
 	};
 
