@@ -6,7 +6,7 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 15:59:12 by acoinus           #+#    #+#             */
-/*   Updated: 2023/03/04 12:43:28 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/04 14:15:26 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,17 +166,42 @@ namespace ft
 			friend difference_type	operator-(const ft::vector_iterator<value_type> &lhs, const ft::vector_iterator<value_type> &rhs) {
 				return (lhs.base() - rhs.base()); }
 
-	};
-
 			/*
-				EQUALITY - INEQUALITY
+				OFFSET DEREFERENCE
 			*/
 
-			// bool	operator==(vector_iterator const &other) const {
-			// 	return (this->_ptr == other._ptr); }
+			reference	&operator[](difference_type n) const {
+				return *(*this + n); }
 
-			// bool	operator!=(vector_iterator const &other) const {
-			// 	return (this->_ptr != other._ptr); }
+	};
+
+	/*
+		EQUALITY - INEQUALITY
+	*/
+
+	template<class Iter1, class Iter2>
+	bool	operator==(ft::vector_iterator<Iter1> const &lhs, ft::vector_iterator<Iter2> const &rhs) {
+		return (lhs.get() == rhs.get()); }
+
+	template<class Iter1, class Iter2>
+	bool	operator!=(ft::vector_iterator<Iter1> const &lhs, ft::vector_iterator<Iter2> const &rhs) {
+		return (lhs.get() != rhs.get()); }
+
+	template<class Iter1, class Iter2>
+	bool	operator<(ft::vector_iterator<Iter1> const &lhs, ft::vector_iterator<Iter2> const &rhs) {
+		return (lhs.get() < rhs.get()); }
+
+	template<class Iter1, class Iter2>
+	bool	operator<=(ft::vector_iterator<Iter1> const &lhs, ft::vector_iterator<Iter2> const &rhs) {
+		return (lhs.get() <= rhs.get()); }
+
+	template<class Iter1, class Iter2>
+	bool	operator>(ft::vector_iterator<Iter1> const &lhs, ft::vector_iterator<Iter2> const &rhs) {
+		return (lhs.get() > rhs.get()); }
+
+	template<class Iter1, class Iter2>
+	bool	operator>=(ft::vector_iterator<Iter1> const &lhs, ft::vector_iterator<Iter2> const &rhs) {
+		return (lhs.get() >= rhs.get()); }
 }
 
 #endif
