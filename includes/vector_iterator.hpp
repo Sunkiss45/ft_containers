@@ -6,7 +6,7 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 15:59:12 by acoinus           #+#    #+#             */
-/*   Updated: 2023/03/04 14:22:06 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/04 16:41:42 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,12 +44,12 @@ namespace ft
 			vector_iterator(vector_iterator const &other) : _ptr(other._ptr) {};
 
 			vector_iterator &operator=(vector_iterator const &other) {
-				if (*this != other)
+				if (this != &other)
 					_ptr = other._ptr;
-				return (this); }
+				return (*this); }
 
 			/*
-				GETTER - DEREFERENCED
+				GETTER - DEREFERENCED - OFFSET DEREFERENCE
 			*/
 
 			pointer		get(void) const {
@@ -60,6 +60,9 @@ namespace ft
 
 			reference	operator->(void) const {
 				return &(operator*()); }
+
+			reference	operator[](difference_type n) const {
+				return *(*this + n); }
 
 			/*
 				INCREMENTATION - DECREMENTATION
@@ -119,13 +122,6 @@ namespace ft
 
 			friend difference_type	operator-(const ft::vector_iterator<value_type> &lhs, const ft::vector_iterator<value_type> &rhs) {
 				return (lhs.base() - rhs.base()); }
-
-			/*
-				OFFSET DEREFERENCE
-			*/
-
-			reference	&operator[](difference_type n) const {
-				return *(*this + n); }
 
 	};
 

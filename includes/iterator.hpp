@@ -6,7 +6,7 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/04 14:17:15 by ebarguil          #+#    #+#             */
-/*   Updated: 2023/03/04 14:22:31 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/04 16:41:35 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 # include <cstddef>
 
-namespace ft 
+namespace ft
 {
 	struct output_iterator_tag {};
 	struct input_iterator_tag {};
@@ -46,20 +46,20 @@ namespace ft
 	template <class T>
 	struct iterator_traits<T*>
 	{
-		typedef ptrdiff_t					difference_type;
-		typedef T							value_type;
-		typedef T*							pointer;
-		typedef T&							reference;
+		typedef std::ptrdiff_t					difference_type;
+		typedef T								value_type;
+		typedef T*								pointer;
+		typedef T&								reference;
 		typedef ft::random_access_iterator_tag	iterator_category;
 	};
 
 	template <class T>
 	struct iterator_traits<const T*>
 	{
-		typedef ptrdiff_t					difference_type;
-		typedef T							value_type;
-		typedef const T*					pointer;
-		typedef const T&					reference;
+		typedef std::ptrdiff_t					difference_type;
+		typedef T								value_type;
+		typedef const T*						pointer;
+		typedef const T&						reference;
 		typedef ft::random_access_iterator_tag	iterator_category;
 	};
 }
