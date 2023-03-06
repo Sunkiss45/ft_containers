@@ -6,7 +6,7 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/04 14:45:40 by ebarguil          #+#    #+#             */
-/*   Updated: 2023/03/04 18:40:05 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/06 18:05:17 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,21 +44,26 @@ namespace ft
 		public:
 			
 			/*
-				DEFAULT CONSTRUCT - DESTRUCT - COPY CONSTRUCT - ASSIGN CONSTRUCT
+				CONSTRUCTOR - COPY CONSTRUCT - ASSIGN CONSTRUCT
 			*/
 
+			/* DEFAULT */
 			explicit vector(const allocator_type& alloc = allocator_type())
 			: _alloc(alloc), _array(NULL), _size(0), _capa(0) {};
 
-			// explicit vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type())
-			// : _alloc(alloc), _array(NULL), _size(n), _capa(n) {
-			// 	this->_array = this->_alloc.allocate(n);
-			// 	if (n > 0) {
-			// 		for (size_type i = 0; i < n; i++) {
-			// 			this->_alloc.construct(this->_array + i, val);
-			// 		}
-			// 	}
-			// };
+			/* FILL */
+			explicit vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type())
+			: _alloc(alloc), _array(NULL), _size(n), _capa(n) {
+				this->_array = this->_alloc.allocate(n);
+				if (n > 0) {
+					for (size_type i = 0; i < n; i++) {
+						this->_alloc.construct(this->_array + i, val);
+					}
+				}
+			};
+
+			/* RANGE */
+			//enable if
 
 			// template <class InputIterator>
 			// vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type())
@@ -95,18 +100,42 @@ namespace ft
 				CAPACITY
 			*/
 			
-			
+			size_type	max_size(void) const {
+				return (this->_alloc.max_size()); }
+
+			void	reserve(size_type n) {
+				if (n > this->max_size()) {
+					throw std::length_error("ft::vector::reserve ) n overflow ft::vector::_alloc::max_size()"); }
+				if (n <= this->capacity()) {
+					return; }
+				pointer	new = this->_alloc.allocate(n);
+				for (size_type i = 0; i < this->_size; i++) {
+					this->_alloc.construct(new + i, *(this->_array + i));
+					this->_alloc.destroy(this->_array + i);
+				}
+				this->_alloc.deallocate(this->_array, this->_capa);
+				this->_array = new;
+				this->_capa = n;
+				return;
+			}
 
 			/*
 				MODIFIERS
 			*/
 
-			void push_back(const value_type& val) {
-				this->_size++;
-				if (this->_size > this->capa) {
+			// void push_back(const value_type& val) {
+			// 	this->_size++;
+			// 	if (this->_size > this->capa) {
 
-				}
-			};
+			// 	}
+			// };
+
+			/*
+				ALLOCATOR
+			*/
+
+			allocator_type	get_allocator(void) const {
+				return (this->_alloc); }
 
 	};
 }
