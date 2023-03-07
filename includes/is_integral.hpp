@@ -33,8 +33,6 @@ namespace ft
 
 	template<> struct is_integral<bool>						: public true_type {};
 	template<> struct is_integral<char>						: public true_type {};
-	template<> struct is_integral<char16_t>					: public true_type {};
-	template<> struct is_integral<char32_t>					: public true_type {};
 	template<> struct is_integral<wchar_t>					: public true_type {};
 	template<> struct is_integral<signed char>				: public true_type {};
 	template<> struct is_integral<short int>				: public true_type {};
@@ -51,8 +49,6 @@ namespace ft
 
 	template<> struct is_integral<const bool>						: public true_type {};
 	template<> struct is_integral<const char>						: public true_type {};
-	template<> struct is_integral<const char16_t>					: public true_type {};
-	template<> struct is_integral<const char32_t>					: public true_type {};
 	template<> struct is_integral<const wchar_t>					: public true_type {};
 	template<> struct is_integral<const signed char>				: public true_type {};
 	template<> struct is_integral<const short int>					: public true_type {};
@@ -69,8 +65,6 @@ namespace ft
 
 	template<> struct is_integral<volatile bool>						: public true_type {};
 	template<> struct is_integral<volatile char>						: public true_type {};
-	template<> struct is_integral<volatile char16_t>					: public true_type {};
-	template<> struct is_integral<volatile char32_t>					: public true_type {};
 	template<> struct is_integral<volatile wchar_t>						: public true_type {};
 	template<> struct is_integral<volatile signed char>					: public true_type {};
 	template<> struct is_integral<volatile short int>					: public true_type {};

@@ -6,7 +6,7 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:37:56 by ebarguil          #+#    #+#             */
-/*   Updated: 2023/03/06 18:05:14 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/07 16:54:42 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 namespace ft
 {
-	template<class Iterator>
+	template <typename Iterator>
 	class reverse_iterator
 	{
 		public:
@@ -48,7 +48,7 @@ namespace ft
 			reverse_iterator(const reverse_iterator<Iter> &rev_it) : _iter(rev_it.base()) {};
 
 			/* DESTRUCTOR */
-			virtual ~reverse_iterator(voigetd) {};
+			virtual ~reverse_iterator(void) {};
 
 			/* OPERATOR = */
 
@@ -120,7 +120,7 @@ namespace ft
 				this->_iter += n;
 				return (*this);
 			}
-	}
+	};
 
 	/*
 		NON-MEMBER FUNCTIONS

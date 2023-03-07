@@ -6,21 +6,20 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 15:59:12 by acoinus           #+#    #+#             */
-/*   Updated: 2023/03/06 16:24:09 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/07 16:56:35 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef VECTOR_ITERATOR_HPP
 # define VECTOR_ITERATOR_HPP
 
-#include "iterator.hpp"
+# include "iterator.hpp"
 
 namespace ft
 {
 	template <typename T>
 	class vector_iterator : public ft::iterator<ft::random_access_iterator_tag, T>
 	{
-
 		public:
 			typedef typename ft::iterator<ft::random_access_iterator_tag, T>::iterator_category	iterator_category;
 			typedef typename ft::iterator<ft::random_access_iterator_tag, T>::value_type		value_type;
