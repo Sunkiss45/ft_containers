@@ -6,7 +6,7 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 15:59:12 by acoinus           #+#    #+#             */
-/*   Updated: 2023/03/07 16:56:35 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/08 18:33:33 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,18 +33,24 @@ namespace ft
 		public:
 
 			/*
-				DEFAULT CONSTRUCT - DESTRUCT - COPY CONSTRUCT - ASSIGN CONSTRUCT
+				CONSTRUCTOR - DESTRUCTOR
 			*/
 
+			/* DEFAULT */
 			vector_iterator(void) : _ptr(0) {};
 
-			virtual ~vector_iterator(void) {};
+			/* POINTER */
+			vector_iterator(pointer const ptr) : _ptr(ptr) {};
 
+			/* COPY */
 			vector_iterator(vector_iterator const &other) : _ptr(other._ptr) {};
+
+			/* DESTRUCTOR */
+			virtual ~vector_iterator(void) {};
 
 			vector_iterator &operator=(vector_iterator const &other) {
 				if (this != &other)
-					_ptr = other._ptr;
+					this->_ptr = other._ptr;
 				return (*this); }
 
 			/*
@@ -55,7 +61,7 @@ namespace ft
 				return(this->_ptr); }
 
 			reference	operator*(void) const {
-				return(this->*_ptr); }
+				return(*this->_ptr); }
 
 			reference	operator->(void) const {
 				return &(operator*()); }
@@ -71,7 +77,7 @@ namespace ft
 				++this->_ptr;
 				return(*this); }
 
-			vector_iterator	&operator++(int) {
+			vector_iterator	operator++(int) {
 				vector_iterator tmp = *this;
 				++this->_ptr;
 				return(tmp); }
@@ -80,7 +86,7 @@ namespace ft
 				--this->_ptr;
 				return(*this); }
 
-			vector_iterator	&operator--(int) {
+			vector_iterator	operator--(int) {
 				vector_iterator tmp = *this;
 				--this->_ptr;
 				return(tmp); }
@@ -99,8 +105,8 @@ namespace ft
 			friend ft::vector_iterator<value_type>	operator+(const difference_type n, const ft::vector_iterator<value_type> &rhs) {
 				return vector_iterator<value_type>(n + rhs.base()); }
 
-			friend ft::vector_iterator<value_type>	operator+(const ft::vector_iterator<value_type> &lhs, const difference_type n) {
-				return vector_iterator<value_type>(lhs.base() + n); }
+			// friend ft::vector_iterator<value_type>	operator+(const ft::vector_iterator<value_type> &lhs, const difference_type n) {
+			// 	return vector_iterator<value_type>(lhs.base() + n); }
 
 			friend ft::vector_iterator<value_type>	operator+(const ft::vector_iterator<value_type> &lhs, const ft::vector_iterator<value_type> &rhs) {
 				return vector_iterator<value_type>(lhs.base() + rhs.base()); }
@@ -116,8 +122,8 @@ namespace ft
 			friend difference_type	operator-(const difference_type n, const ft::vector_iterator<value_type> &rhs) {
 				return (n - rhs.base()); }
 
-			friend difference_type	operator-(const ft::vector_iterator<value_type> &lhs, const difference_type n) {
-				return (lhs.base() - n); }
+			// friend difference_type	operator-(const ft::vector_iterator<value_type> &lhs, const difference_type n) {
+			// 	return (lhs.base() - n); }
 
 			friend difference_type	operator-(const ft::vector_iterator<value_type> &lhs, const ft::vector_iterator<value_type> &rhs) {
 				return (lhs.base() - rhs.base()); }

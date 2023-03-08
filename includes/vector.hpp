@@ -6,7 +6,7 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/04 14:45:40 by ebarguil          #+#    #+#             */
-/*   Updated: 2023/03/07 18:42:55 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/08 18:34:19 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,11 +203,13 @@ namespace ft
 				if (n <= this->capacity()) {
 					return; }
 				pointer	ide = this->_alloc.allocate(n);
-				for (size_type i = 0; i < this->size(); i++) {
-					this->_alloc.construct(ide + i, *(this->_array + i));
-					this->_alloc.destroy(this->_array + i);
+				if (!this->empty()) {
+					for (size_type i = 0; i < this->size(); i++) {
+						this->_alloc.construct(ide + i, *(this->_array + i));
+						this->_alloc.destroy(this->_array + i);
+					}
+					this->_alloc.deallocate(this->_array, this->_capa);
 				}
-				this->_alloc.deallocate(this->_array, this->_capa);
 				this->_array = ide;
 				this->_capa = n;
 				return;
@@ -283,10 +285,12 @@ namespace ft
 
 			/* PUSH_BACK */
 			void	push_back(const value_type &val) {
+				if (this->capacity() == 0) {
+					reserve(1); }
+				else if (this->size() + 1 > this->capacity()) {
+					reserve(reserve_calc(this->size() + 1)); }
+				this->_alloc.construct(this->_array + (this->size()), val);
 				this->_size++;
-				if (this->size() > this->capacity()) {
-					reserve(reserve_calc(this->size())); }
-				this->_alloc.construct(this->_array + (this->size() - 1), val);
 				return;
 			}
 
@@ -300,19 +304,54 @@ namespace ft
 			}
 
 			/* INSERT */
-			iterator insert(iterator position, const value_type &val) {
-				
+			iterator	insert(iterator position, const value_type &val) {
+				difference_type	place = position - this->begin();
+				insert(position, 1, val);
+				return (iterator(this->begin() + place));
 			}
 			
-			void insert(iterator position, size_type n, const value_type &val) {
+			void		insert(iterator position, size_type n, const value_type &val) {
 				if (n == 0) {
 					return; }
+				difference_type	nbr_move = this->end() - position;
+				difference_type	to_replace = position - this->begin();
 				if (this->size() + n > this->capacity()) {
 					reserve(reserve_calc(this->size() + n)); }
-				for (size_type i = 0; i < n; i++) {
-					this->_alloc.construct(*())
+				if (nbr_move >= 0 && to_replace >= 0) {
+					for (size_type i = 1; i <= (size_type)nbr_move; i++) {
+						this->_alloc.construct(this->_array + (this->size() + n - i), *(this->_array + (this->size() - i)));
+						this->_alloc.destroy(this->_array + (this->size() - i));
+					}
+					for (; n > 0; n--, to_replace++) {
+						this->_alloc.construct(this->_array + to_replace, val); 
+						this->_size++;
+					}
 				}
-				this->_size += n;
+				return;
+			}
+
+			template <class InputIterator>
+			void		insert(iterator position, InputIterator first, InputIterator last,
+			typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type = NULL) {
+				difference_type	n = (last - first) + 1;
+				if (n > 0) {
+					n--;
+					difference_type	nbr_move = this->end() - position;
+					difference_type	to_replace = position - this->begin();
+					if (this->size() + n > this->capacity()) {
+						reserve(reserve_calc(this->size() + n)); }
+					if (nbr_move >= 0 && to_replace >= 0) {
+						for (size_type i = 1; i <= (size_type)nbr_move; i++) {
+							this->_alloc.construct(this->_array + (this->size() + n - i), *(this->_array + (this->size() - i)));
+							this->_alloc.destroy(this->_array + (this->size() - i));
+						}
+						iterator	tmp = first;
+						for (; n > 0; n--, to_replace++, tmp++) {
+							this->_alloc.construct(this->_array + to_replace, *tmp); 
+							this->_size++;
+						}
+					}
+				}
 				return;
 			}
 

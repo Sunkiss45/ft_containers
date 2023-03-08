@@ -6,7 +6,7 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/04 14:17:15 by ebarguil          #+#    #+#             */
-/*   Updated: 2023/03/04 16:41:35 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/08 14:47:11 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,8 @@ namespace ft
 	{
 		typedef typename Iterator::difference_type		difference_type;
 		typedef typename Iterator::value_type			value_type;
-		typedef typename Iterator::Pointer				pointer;
-		typedef typename Iterator::Reference			reference;
+		typedef typename Iterator::pointer				pointer;
+		typedef typename Iterator::reference			reference;
 		typedef typename Iterator::iterator_category	iterator_category;
 	};
 
