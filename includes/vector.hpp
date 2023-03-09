@@ -6,7 +6,7 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/04 14:45:40 by ebarguil          #+#    #+#             */
-/*   Updated: 2023/03/08 18:34:19 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/09 20:06:04 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -342,8 +342,8 @@ namespace ft
 						reserve(reserve_calc(this->size() + n)); }
 					if (nbr_move >= 0 && to_replace >= 0) {
 						for (size_type i = 1; i <= (size_type)nbr_move; i++) {
-							this->_alloc.construct(this->_array + (this->size() + n - i), *(this->_array + (this->size() - i)));
-							this->_alloc.destroy(this->_array + (this->size() - i));
+							this->_alloc.construct(this->end() + (n - i), *(this->end() - i));
+							this->_alloc.destroy(this->end() - i);
 						}
 						iterator	tmp = first;
 						for (; n > 0; n--, to_replace++, tmp++) {
@@ -353,6 +353,24 @@ namespace ft
 					}
 				}
 				return;
+			}
+
+			/* ERASE */
+			iterator	erase(iterator position) {
+				iterator	ret();
+				if (!this->empty()) {
+					difference_type	nbr_move = this->end() - position;
+					if (nbr_move >= 0) {
+						for (size_type i = 0; i > (size_type)nbr_move; i++) {
+							this->_alloc.destroy(this->end() - (nbr_move + i));
+							this->_alloc.construct(this->end() - (nbr_move + i), *(this->end() - (nbr_move + i + 1)));
+							if (i == 1) {
+								ret = (this->end() - (nbr_move + i)); }
+						}
+						this->_size--;
+					}
+				}
+				return (ret);
 			}
 
 			/* CLEAR */
