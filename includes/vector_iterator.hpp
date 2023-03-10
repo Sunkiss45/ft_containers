@@ -6,7 +6,7 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/01 15:59:12 by acoinus           #+#    #+#             */
-/*   Updated: 2023/03/08 18:33:33 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/10 19:16:06 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,10 @@ namespace ft
 			/* DESTRUCTOR */
 			virtual ~vector_iterator(void) {};
 
+			/* CONST ITER */
+			operator vector_iterator<T const>() const {
+				return (vector_iterator<T const>(_ptr)); }
+
 			vector_iterator &operator=(vector_iterator const &other) {
 				if (this != &other)
 					this->_ptr = other._ptr;
@@ -63,7 +67,7 @@ namespace ft
 			reference	operator*(void) const {
 				return(*this->_ptr); }
 
-			reference	operator->(void) const {
+			pointer	operator->(void) const {
 				return &(operator*()); }
 
 			reference	operator[](difference_type n) const {

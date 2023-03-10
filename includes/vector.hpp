@@ -6,7 +6,7 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/04 14:45:40 by ebarguil          #+#    #+#             */
-/*   Updated: 2023/03/10 16:18:51 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/10 19:18:37 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include "reverse_iterator.hpp"
 # include "enable_if.hpp"
 # include "is_integral.hpp"
+# include "lexicographical_compare.hpp"
 
 namespace ft
 {
@@ -36,7 +37,7 @@ namespace ft
 			typedef typename ft::reverse_iterator<iterator>					reverse_iterator;
 			typedef typename ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 			typedef typename ft::iterator_traits<iterator>::difference_type	difference_type;
-			typedef	std::size_t													size_type;
+			typedef	std::size_t												size_type;
 
 		private:
 			allocator_type	_alloc;
@@ -68,15 +69,19 @@ namespace ft
 			/* RANGE */
 			template <class InputIterator>
 			vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
-			typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type = NULL)
+			typename ft::enable_if<!ft::is_integral<InputIterator>::value, void **>::type = 0)
 			: _alloc(alloc), _array(NULL), _size(0), _capa(0) {
-				difference_type	dif = last - first;
-				if (dif > 0) {
-					this->_size = (size_type)dif;
-					this->_capa = (size_type)dif;
-					this->_array = this->_alloc.allocate(this->_capa);
-					for (; first != last; first++) {
-						this->_alloc.construct(this->_array + (dif - (last - first)), *first); }
+				InputIterator	tmp = first;
+				size_type		rg = 0;
+				for (; tmp != last; tmp++) {
+					rg++; }
+				this->_size = rg;
+				this->_capa = this->size();
+				this->_array = _alloc.allocate(this->capacity());
+				pointer 		new_array = this->_array;
+				for (;first != last; first++) {
+					this->_alloc.construct(new_array, *first);
+					new_array++;
 				}
 				return;
 			}
@@ -176,16 +181,19 @@ namespace ft
 
 			/* RESIZE */
 			void	resize(size_type n, value_type val = value_type()) {
-				if (n < this->size()) {
+				if (n == this->size())
+					return;
+				else if (n < this->size()) {
 					for (size_type i = n; i < this->size(); i++) {
 						this->_alloc.destroy(this->_array + i); }
 				}
 				else if (n > this->size()) {
 					if (n > this->capacity()) {
-						this->reserve(reserve_calc(n)); }
+						this->reserve(this->reserve_calc(n)); }
 					for (size_type i = this->size(); i < n; i++) {
 						this->_alloc.construct(this->_array + i, val); }
 				}
+				this->_size = n;
 				return;
 			}
 
@@ -208,8 +216,9 @@ namespace ft
 						this->_alloc.construct(ide + i, *(this->_array + i));
 						this->_alloc.destroy(this->_array + i);
 					}
-					this->_alloc.deallocate(this->_array, this->_capa);
 				}
+				if (this->capacity() != 0) {
+					this->_alloc.deallocate(this->_array, this->_capa); }
 				this->_array = ide;
 				this->_capa = n;
 				return;
@@ -260,24 +269,26 @@ namespace ft
 			/* ASSIGN */
 			template <class InputIterator>
 			void	assign(InputIterator first, InputIterator last,
-			typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type = NULL) {
-				difference_type	dif = last - first;
-				if (dif > 0) {
-					this->clear();
-					this->_size = (size_type)dif;
-					if (this->capacity() < (size_type)dif) {
-						reserve(reserve_calc(dif)); }
-					for (; first != last; first++) {
-						this->_alloc.construct(this->_array + (dif - (last - first)), *first); }
-				}
+			typename ft::enable_if<!ft::is_integral<InputIterator>::value, void **>::type = 0) {
+				this->clear();
+				this->insert(this->begin(), first, last);
+				// difference_type	dif = last - first;
+				// if (dif > 0) {
+				// 	this->clear();
+				// 	this->_size = (size_type)dif;
+				// 	if (this->capacity() < (size_type)dif) {
+				// 		this->reserve(this->reserve_calc(dif)); }
+				// 	for (; first != last; first++) {
+				// 		this->_alloc.construct(this->_array + (dif - (last - first)), *first); }
+				// }
 				return;
 			}
 
 			void	assign(size_type n, const value_type &val) {
 				this->clear();
-				this->_size = n;
 				if (this->capacity() < n) {
-					reserve(reserve_calc(n)); }
+					this->reserve(this->reserve_calc(n)); }
+				this->_size = n;
 				for (size_type i = 0; i < n; i++) {
 					this->_alloc.construct(this->_array + i, val); }
 				return;
@@ -286,9 +297,9 @@ namespace ft
 			/* PUSH_BACK */
 			void	push_back(const value_type &val) {
 				if (this->capacity() == 0) {
-					reserve(1); }
+					this->reserve(1); }
 				else if (this->size() + 1 > this->capacity()) {
-					reserve(reserve_calc(this->size() + 1)); }
+					this->reserve(this->reserve_calc(this->size() + 1)); }
 				this->_alloc.construct(this->_array + (this->size()), val);
 				this->_size++;
 				return;
@@ -298,7 +309,7 @@ namespace ft
 			void	pop_back(void) {
 				if (!this->empty()) {
 					this->_size--;
-					this->_alloc.destroy(this->end());
+					this->_alloc.destroy(this->_array + this->size());
 				}
 				return;
 			}
@@ -306,7 +317,7 @@ namespace ft
 			/* INSERT */
 			iterator	insert(iterator position, const value_type &val) {
 				difference_type	place = position - this->begin();
-				insert(position, 1, val);
+				this->insert(position, 1, val);
 				return (iterator(this->begin() + place));
 			}
 			
@@ -316,7 +327,7 @@ namespace ft
 				difference_type	nbr_move = this->end() - position;
 				difference_type	to_replace = position - this->begin();
 				if (this->size() + n > this->capacity()) {
-					reserve(reserve_calc(this->size() + n)); }
+					this->reserve(this->reserve_calc(this->size() + n)); }
 				if (nbr_move >= 0 && to_replace >= 0) {
 					for (size_type i = 1; i <= (size_type)nbr_move; i++) {
 						this->_alloc.construct(this->_array + (this->size() + n - i), *(this->_array + (this->size() - i)));
@@ -332,25 +343,26 @@ namespace ft
 
 			template <class InputIterator>
 			void		insert(iterator position, InputIterator first, InputIterator last,
-			typename ft::enable_if<!ft::is_integral<InputIterator>::value, InputIterator>::type = NULL) {
-				difference_type	n = (last - first) + 1;
-				if (n > 0) {
-					n--;
-					difference_type	nbr_move = this->end() - position;
-					difference_type	to_replace = position - this->begin();
-					if (this->size() + n > this->capacity()) {
-						reserve(reserve_calc(this->size() + n)); }
-					if (nbr_move >= 0 && to_replace >= 0) {
-						for (size_type i = 1; i <= (size_type)nbr_move; i++) {
-						this->_alloc.construct(this->_array + (this->size() + n - i), *(this->_array + (this->size() - i)));
-						this->_alloc.destroy(this->_array + (this->size() - i));
-						}
-						iterator	tmp = first;
-						for (; n > 0; n--, to_replace++, tmp++) {
-							this->_alloc.construct(this->_array + to_replace, *tmp); 
-							this->_size++;
-						}
-					}
+			typename ft::enable_if<!ft::is_integral<InputIterator>::value, void **>::type = 0) {
+				if (first == last) {
+					return; }
+				difference_type dif = position - this->begin();
+				size_type rg = 0;
+				for (; first != last; first++) {
+					rg++; }
+				if (this->size() + rg > this->capacity()) {
+					this->reserve(this->reserve_calc(this->size() + rg)); }
+				pointer	index = this->_array + this->size() + rg - 1;
+				pointer	stop = this->_array + dif + rg - 1;
+				for (; index != stop; index--) {
+					this->_alloc.construct(index, *(index - rg));
+					this->_alloc.destroy(index - rg);
+				}
+				this->_size += rg;
+				while (rg > 0) {
+					last--;
+					this->_alloc.construct(this->_array + dif - 1 + rg, *last);
+					rg--;
 				}
 				return;
 			}
@@ -411,7 +423,7 @@ namespace ft
 	template <class T, class Alloc>
 	bool	operator==(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) {
 		if (lhs.size() == rhs.size()) {
-			for (size_type i = 0; i < lhs.size(); i++) {
+			for (typename ft::vector<T>::size_type i = 0; i < lhs.size(); i++) {
 				if (lhs[i] != rhs[i]) {
 					return false; }
 			}
@@ -426,7 +438,7 @@ namespace ft
 	
 	template <class T, class Alloc>
 	bool	operator<(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) {
-		return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()))};
+		return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); }
 
 	template <class T, class Alloc>
 	bool	operator>(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) {
