@@ -6,7 +6,7 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/04 14:45:40 by ebarguil          #+#    #+#             */
-/*   Updated: 2023/03/09 20:06:04 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/10 16:18:51 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -265,7 +265,7 @@ namespace ft
 				if (dif > 0) {
 					this->clear();
 					this->_size = (size_type)dif;
-					if (this->capacity() < dif) {
+					if (this->capacity() < (size_type)dif) {
 						reserve(reserve_calc(dif)); }
 					for (; first != last; first++) {
 						this->_alloc.construct(this->_array + (dif - (last - first)), *first); }
@@ -342,8 +342,8 @@ namespace ft
 						reserve(reserve_calc(this->size() + n)); }
 					if (nbr_move >= 0 && to_replace >= 0) {
 						for (size_type i = 1; i <= (size_type)nbr_move; i++) {
-							this->_alloc.construct(this->end() + (n - i), *(this->end() - i));
-							this->_alloc.destroy(this->end() - i);
+						this->_alloc.construct(this->_array + (this->size() + n - i), *(this->_array + (this->size() - i)));
+						this->_alloc.destroy(this->_array + (this->size() - i));
 						}
 						iterator	tmp = first;
 						for (; n > 0; n--, to_replace++, tmp++) {
@@ -357,20 +357,34 @@ namespace ft
 
 			/* ERASE */
 			iterator	erase(iterator position) {
-				iterator	ret();
 				if (!this->empty()) {
-					difference_type	nbr_move = this->end() - position;
-					if (nbr_move >= 0) {
-						for (size_type i = 0; i > (size_type)nbr_move; i++) {
-							this->_alloc.destroy(this->end() - (nbr_move + i));
-							this->_alloc.construct(this->end() - (nbr_move + i), *(this->end() - (nbr_move + i + 1)));
-							if (i == 1) {
-								ret = (this->end() - (nbr_move + i)); }
-						}
-						this->_size--;
-					}
+					for (iterator tmp = position; (tmp + 1) != this->end(); tmp++) {
+						tmp[0] = tmp[1]; }
+					this->_alloc.destroy(this->_array + (this->size() - 1));
+					this->_size--;
 				}
-				return (ret);
+				return (position);
+			}
+
+			iterator	erase(iterator first, iterator last) {
+				for (; first != last; last--) {
+					erase(first); }
+				return (first);
+			}
+
+			/* SWAP */
+			void	swap(vector &x) {
+				pointer		tmp_array = this->_array;
+				size_type	tmp_size = this->_size;
+				size_type	tmp_capa = this->_capa;
+
+				this->_array = x._array;
+				this->_size = x._size;
+				this->_capa = x._capa;
+				x._array = tmp_array;
+				x._size = tmp_size;
+				x._capa = tmp_capa;
+				return;
 			}
 
 			/* CLEAR */
@@ -387,8 +401,51 @@ namespace ft
 
 			allocator_type	get_allocator(void) const {
 				return (this->_alloc); }
-
 	};
+
+	/*
+		NON-MEMBERS FUNCTIONS
+	*/
+
+	/* RELATIONAL OPERATORS */
+	template <class T, class Alloc>
+	bool	operator==(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) {
+		if (lhs.size() == rhs.size()) {
+			for (size_type i = 0; i < lhs.size(); i++) {
+				if (lhs[i] != rhs[i]) {
+					return false; }
+			}
+			return true;
+		}
+		return false;
+	}
+
+	template <class T, class Alloc>
+	bool	operator!=(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) {
+		return !(lhs == rhs); }
+	
+	template <class T, class Alloc>
+	bool	operator<(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) {
+		return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()))};
+
+	template <class T, class Alloc>
+	bool	operator>(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) {
+		return (rhs < lhs); }
+
+	template <class T, class Alloc>
+	bool	operator<=(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) {
+		return !(lhs > rhs); }
+
+	template <class T, class Alloc>
+	bool	operator>=(const vector<T, Alloc> &lhs, const vector<T, Alloc> &rhs) {
+		return !(lhs < rhs); }
+
+	/* SWAP */
+	template <class T, class Alloc>
+	void	swap(ft::vector<T, Alloc> &x, ft::vector<T, Alloc> &y) {
+		x.swap(y);
+		return;
+	}
 }
 
 #endif
