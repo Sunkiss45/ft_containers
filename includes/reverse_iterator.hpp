@@ -6,7 +6,7 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/06 15:37:56 by ebarguil          #+#    #+#             */
-/*   Updated: 2023/03/10 19:25:48 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/11 12:16:45 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,8 @@ namespace ft
 			/* OPERATOR = */
 
 			template<class Iter>
-			reverse_iterator &operator=(const reverse_iterator<Iter> &cpy) {
-				if (this != *cpy) {
+			reverse_iterator &operator=(const reverse_iterator<const Iter> &cpy) {
+				if (this != &cpy) {
 					this->_iter = cpy.base(); }
 				return (*this);
 			}

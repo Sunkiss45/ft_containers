@@ -6,7 +6,7 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/04 14:45:40 by ebarguil          #+#    #+#             */
-/*   Updated: 2023/03/10 19:18:37 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/11 18:40:34 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,13 @@
 # define VECTOR_HPP
 
 # include <memory>
+# include <stdexcept>
 # include "vector_iterator.hpp"
 # include "reverse_iterator.hpp"
 # include "enable_if.hpp"
 # include "is_integral.hpp"
 # include "lexicographical_compare.hpp"
+# include "distance.hpp"
 
 namespace ft
 {
@@ -58,8 +60,10 @@ namespace ft
 			/* FILL */
 			explicit vector(size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type())
 			: _alloc(alloc), _array(NULL), _size(n), _capa(n) {
-				this->_array = this->_alloc.allocate(n);
+				if (n > this->max_size()) {
+					throw std::length_error("vector::fill"); }
 				if (n > 0) {
+					this->_array = this->_alloc.allocate(n);
 					for (size_type i = 0; i < n; i++) {
 						this->_alloc.construct(this->_array + i, val); }
 				}
@@ -71,18 +75,34 @@ namespace ft
 			vector(InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(),
 			typename ft::enable_if<!ft::is_integral<InputIterator>::value, void **>::type = 0)
 			: _alloc(alloc), _array(NULL), _size(0), _capa(0) {
-				InputIterator	tmp = first;
-				size_type		rg = 0;
-				for (; tmp != last; tmp++) {
-					rg++; }
-				this->_size = rg;
-				this->_capa = this->size();
-				this->_array = _alloc.allocate(this->capacity());
-				pointer 		new_array = this->_array;
-				for (;first != last; first++) {
-					this->_alloc.construct(new_array, *first);
-					new_array++;
+				for (size_type i = 0; first != last; first++) {
+					this->reserve(this->capacity() + 1);
+					this->_alloc.construct(this->_array + i++, *first);
+					this->_size++;
 				}
+
+				// this->insert(this->begin(), first, last);
+				// vector	tmp(*this);
+				// this->clear();
+				// this->_alloc.deallocate(this->_array, this->capacity());
+				// this->_array = tmp._array;
+				// this->_size = tmp.size();
+				// this->_capa = tmp.capacity();
+
+				// InputIterator	tmp = first;
+				// size_type		rg = 0;
+				// for (; tmp != last; tmp++) {
+				// 	rg++; }
+				// if (rg > this->max_size()) {
+				// 	throw std::length_error("vector::range"); }
+				// this->_size = rg;
+				// this->_capa = this->size();
+				// this->_array = _alloc.allocate(this->capacity());
+				// pointer 		new_array = this->_array;
+				// for (;first != last; first++) {
+				// 	this->_alloc.construct(new_array, *first);
+				// 	new_array++;
+				// }
 				return;
 			}
 
@@ -101,13 +121,7 @@ namespace ft
 			vector	&operator=(const vector &x) {
 				if (this != &x) {
 					this->clear();
-					this->_alloc.deallocate(this->_array, this->capacity());
-					if (x.size() > this->capacity()) {
-						this->_capa = x.size(); }
-					this->_array = this->_alloc.allocate(this->capacity());
-					this->_size = x.size();
-					for (size_type i = 0; i < x.size(); i++) {
-						this->_alloc.construct(this->_array + i, *(x._array + i)); }
+					this->assign(x.begin(), x.end());
 				}
 				return (*this);
 			}
@@ -177,7 +191,8 @@ namespace ft
 
 			/* EMPTY */
 			bool	empty(void) const {
-				return (this->size() > 0 ? false : true); }
+				return (this->size() == 0); }
+				// return (this->size() > 0 ? false : true); }
 
 			/* RESIZE */
 			void	resize(size_type n, value_type val = value_type()) {
@@ -207,7 +222,7 @@ namespace ft
 
 			void	reserve(size_type n) {
 				if (n > this->max_size()) {
-					throw std::length_error("ft::vector::reserve ) n overflow ft::vector::_alloc::max_size()"); }
+					throw std::length_error("vector::reserve"); }
 				if (n <= this->capacity()) {
 					return; }
 				pointer	ide = this->_alloc.allocate(n);
@@ -344,27 +359,29 @@ namespace ft
 			template <class InputIterator>
 			void		insert(iterator position, InputIterator first, InputIterator last,
 			typename ft::enable_if<!ft::is_integral<InputIterator>::value, void **>::type = 0) {
-				if (first == last) {
-					return; }
-				difference_type dif = position - this->begin();
-				size_type rg = 0;
 				for (; first != last; first++) {
-					rg++; }
-				if (this->size() + rg > this->capacity()) {
-					this->reserve(this->reserve_calc(this->size() + rg)); }
-				pointer	index = this->_array + this->size() + rg - 1;
-				pointer	stop = this->_array + dif + rg - 1;
-				for (; index != stop; index--) {
-					this->_alloc.construct(index, *(index - rg));
-					this->_alloc.destroy(index - rg);
-				}
-				this->_size += rg;
-				while (rg > 0) {
-					last--;
-					this->_alloc.construct(this->_array + dif - 1 + rg, *last);
-					rg--;
-				}
+					position = this->insert(position, *first) + 1; }
 				return;
+				// size_type		n = static_cast<size_type>(ft::distance(first, last));
+				// difference_type	beg_pos = ft::distance(this->begin(), position);
+				// difference_type	end_pos = ft::distance(position, this->end());
+				// difference_type	length = this->size();
+
+				// if (n == 0) {
+				// 	return; }
+				// if (this->size() + n > this->capacity()) {
+				// 	this->reserve(this->reserve_calc(this->size() + n)); }
+				// for (difference_type i = 1; i <= end_pos; i++) {
+				// 	this->_alloc.construct(this->_array + (length + n - i), *(this->_array + (length - i)));
+				// 	this->_alloc.destroy(this->_array + (length - i));
+				// }
+				// for (size_type i = 0; i < n; i++) {
+				// 	this->_alloc.construct(this->_array + (beg_pos + i), *first);
+				// 	std::cout << "hello first = " << *first << std::endl;
+				// 	first++;
+				// }
+				// this->_size += n;
+				// return;
 			}
 
 			/* ERASE */

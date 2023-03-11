@@ -6,7 +6,7 @@
 /*   By: ebarguil <ebarguil@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/04 14:17:15 by ebarguil          #+#    #+#             */
-/*   Updated: 2023/03/08 14:47:11 by ebarguil         ###   ########.fr       */
+/*   Updated: 2023/03/11 16:38:13 by ebarguil         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,17 @@
 # define ITERATOR_HPP
 
 # include <cstddef>
+# include <iterator>
 
 namespace ft
 {
-	struct output_iterator_tag {};
-	struct input_iterator_tag {};
-	struct forward_iterator_tag : public input_iterator_tag {};
-	struct bidirectional_iterator_tag : public forward_iterator_tag {};
-	struct random_access_iterator_tag : public bidirectional_iterator_tag {};
+	// struct output_iterator_tag {};
+	// struct input_iterator_tag : public std::input_iterator_tag {};
+	// struct forward_iterator_tag : public input_iterator_tag {};
+	// struct bidirectional_iterator_tag : public forward_iterator_tag {};
+	// struct random_access_iterator_tag : public bidirectional_iterator_tag {};
+	struct random_access_iterator_tag : public std::random_access_iterator_tag {};
+
 
 	template <class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
 	struct iterator
